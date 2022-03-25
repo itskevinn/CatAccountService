@@ -1,12 +1,14 @@
-package com.kevcode.cataccountservice.application.CatAccount.Service;
+package com.kevcode.cataccountservice.application.CatAccount.service;
 
-import com.kevcode.cataccountservice.application.CatAccount.Http.Dto.CatAccountDto;
-import com.kevcode.cataccountservice.application.CatAccount.Http.Request.CatAccountRequest;
+import com.kevcode.cataccountservice.application.CatAccount.http.Dto.CatAccountDto;
+import com.kevcode.cataccountservice.application.CatAccount.http.Request.CatAccountRequest;
+import com.kevcode.cataccountservice.application.shared.Response;
 import com.kevcode.cataccountservice.domain.cataccount.entities.CatAccount;
 import com.kevcode.cataccountservice.infrastructure.CatAccountRepositoryCustom;
 import com.kevcode.cataccountservice.infrastructure.ICatAccountRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +41,23 @@ public class CatAccountService implements ICatAccountService {
 
     @Override
     public List<CatAccountDto> findAllByPersonId(Long personId) {
+        return null;
+    }
+
+    @Override
+    public Response<Long> withdraw(Long value, Long accountId) {
+        Long balance = catAccountCustomRepository.withdraw(value, accountId);
+        return new Response<>(balance, HttpStatus.OK, "Su balance es de " + balance.toString());
+    }
+
+    @Override
+    public Long deposit(Long value, Long accountId) {
+        if (value <= 0) return -1L;
+        return catAccountCustomRepository.deposit(value, accountId);
+    }
+
+    @Override
+    public Long getBalance(Long accountId) {
         return null;
     }
 }
