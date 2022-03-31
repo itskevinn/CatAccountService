@@ -2,6 +2,7 @@ package com.kevcode.cataccountservice.application.CatAccount.service;
 
 import com.kevcode.cataccountservice.application.CatAccount.http.Dto.CatAccountDto;
 import com.kevcode.cataccountservice.application.CatAccount.http.Request.CatAccountRequest;
+import com.kevcode.cataccountservice.application.CatAccount.http.Request.NationalTransaction;
 import com.kevcode.cataccountservice.application.shared.Response;
 import com.kevcode.cataccountservice.domain.cataccount.entities.CatAccount;
 import com.kevcode.cataccountservice.infrastructure.CatAccountRepositoryCustom;
@@ -45,19 +46,40 @@ public class CatAccountService implements ICatAccountService {
     }
 
     @Override
-    public Response<Long> withdraw(Long value, Long accountId) {
+    public Response<Long> withdraw(NationalTransaction nationalTransaction) {
+        Long accountId = nationalTransaction.getAccountId();
+        Long value = nationalTransaction.getValue();
+        if (accountId <= 0)
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un id de cuenta válido.");
+        if (value <= 0) return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido.");
         Long balance = catAccountCustomRepository.withdraw(value, accountId);
-        return new Response<>(balance, HttpStatus.OK, "Su balance es de " + balance.toString());
+        return new Response<>(balance, HttpStatus.OK, "Su nuevo balance es de " + balance.toString());
+    }
+
+
+    @Override
+    public Response<Long> deposit(NationalTransaction nationalTransaction) {
+        Long accountId = nationalTransaction.getAccountId();
+        Long value = nationalTransaction.getValue();
+        if (numberLowerOrEqualsToZero(accountId))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un id de cuenta válido.");
+        if (numberLowerOrEqualsToZero(value))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido.");
+        Long balance = catAccountCustomRepository.deposit(value, accountId);
+        return new Response<>(balance, HttpStatus.OK, "Su nuevo balance es de " + balance.toString());
     }
 
     @Override
-    public Long deposit(Long value, Long accountId) {
-        if (value <= 0) return -1L;
-        return catAccountCustomRepository.deposit(value, accountId);
+    public Response<Long> getBalance(Long accountId) {
+        if (numberLowerOrEqualsToZero(accountId))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido");
+        Long balance = catAccountCustomRepository.getBalance(accountId);
+        return new Response<>(balance, HttpStatus.OK, "Su balance es de " + balance);
     }
 
-    @Override
-    public Long getBalance(Long accountId) {
-        return null;
+    private boolean numberLowerOrEqualsToZero(Long value) {
+        return value <= 0;
     }
+
+
 }

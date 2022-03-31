@@ -3,7 +3,7 @@ package com.kevcode.cataccountservice.application.CatAccount.http.Request;
 import lombok.Data;
 
 @Data
-public class CatAccountRequest {
-    private Long balance;
-    private Long accountId;
+public class NationalTransaction {
+   private Long accountId;
+    private Long value;
 }

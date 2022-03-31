@@ -2,6 +2,7 @@ package com.kevcode.cataccountservice.application.CatAccount.service;
 
 import com.kevcode.cataccountservice.application.CatAccount.http.Dto.CatAccountDto;
 import com.kevcode.cataccountservice.application.CatAccount.http.Request.CatAccountRequest;
+import com.kevcode.cataccountservice.application.CatAccount.http.Request.NationalTransaction;
 import com.kevcode.cataccountservice.application.shared.Response;
 
 import java.util.List;
@@ -15,9 +16,9 @@ public interface ICatAccountService {
 
     List<CatAccountDto> findAllByPersonId(Long personId);
 
-    Response<Long> withdraw(Long value, Long accountId);
+    Response<Long> withdraw(NationalTransaction nationalTransaction);
 
-    Long deposit(Long value, Long accountId);
+    public Response<Long> deposit(NationalTransaction nationalTransaction);
 
-    Long getBalance(Long accountId);
+    Response<Long> getBalance(Long accountId);
 }

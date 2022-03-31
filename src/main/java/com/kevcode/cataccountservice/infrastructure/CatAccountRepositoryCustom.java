@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
+public class  CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
     StoredProcedureQueryBuilder storedProcedureQueryBuilder;
     @PersistenceContext
     private EntityManager entityManager;
