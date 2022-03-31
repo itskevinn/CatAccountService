@@ -12,6 +12,9 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	runtimeOnly {
+
+	}
 }
 
 repositories {
@@ -33,4 +36,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('build'){
+	dependencies{
+		tests
+	}
 }

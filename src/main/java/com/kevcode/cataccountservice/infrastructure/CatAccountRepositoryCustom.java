@@ -1,5 +1,6 @@
 package com.kevcode.cataccountservice.infrastructure;
 
+import com.kevcode.cataccountservice.domain.cataccount.entities.CatAccount;
 import com.kevcode.cataccountservice.infrastructure.helpers.NationalTransactions;
 import com.kevcode.cataccountservice.infrastructure.helpers.StoredProcedureParameter;
 import com.kevcode.cataccountservice.infrastructure.helpers.StoredProcedureQueryBuilder;
@@ -48,7 +49,7 @@ public class CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
     }
 
     @Override
-    public List findAllByPersonId(Long personId) {
+    public List<CatAccount> findAllByPersonId(Long personId) {
         return entityManager.createQuery(
                         "SELECT p FROM Person p WHERE person.id = :personId")
                 .setParameter("personId", personId)
