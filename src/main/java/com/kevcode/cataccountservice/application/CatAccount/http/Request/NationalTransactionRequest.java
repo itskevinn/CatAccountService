@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class NationalTransactionRequest {
-    private Long accountId;
+   private Long accountId;
     private Long value;
 }

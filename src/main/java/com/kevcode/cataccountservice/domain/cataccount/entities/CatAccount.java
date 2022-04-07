@@ -1,6 +1,13 @@
 package com.kevcode.cataccountservice.domain.cataccount.entities;
 
-public class CatAccount {
+import com.kevcode.cataccountservice.domain.shared.EntityBase;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+
+@Entity
+public class CatAccount extends EntityBase {
     private Long balance;
     private Long personId;
 

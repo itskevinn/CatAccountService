@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.5'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.6.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
 }
 
 group = 'com.kevcode'
@@ -9,37 +9,37 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	runtimeOnly {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    runtimeOnly {
 
-	}
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.modelmapper:modelmapper:3.0.0'
-	implementation 'io.springfox:springfox-swagger2:3.0.0'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.modelmapper:modelmapper:3.0.0'
+    implementation 'io.springfox:springfox-swagger2:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter:3.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-openfeign:3.1.1'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'com.oracle.ojdbc:ojdbc10:19.3.0.0'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-tasks.named('build'){
-	dependencies{
-		tests
-	}
-}

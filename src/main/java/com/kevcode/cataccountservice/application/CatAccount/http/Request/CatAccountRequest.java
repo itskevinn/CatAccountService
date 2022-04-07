@@ -6,5 +6,4 @@ import lombok.Data;
 public class CatAccountRequest {
     private Long balance;
     private Long accountId;
-    private Long personId;
 }

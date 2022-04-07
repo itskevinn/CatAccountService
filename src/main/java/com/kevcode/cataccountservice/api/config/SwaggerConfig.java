@@ -21,7 +21,7 @@ public class SwaggerConfig {
     public Docket apiDocket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.kevcode.springpractice.api.controllers"))
+                .apis(RequestHandlerSelectors.basePackage("com.kevcode.cataccountservice.api.controllers"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(getApiInfo())

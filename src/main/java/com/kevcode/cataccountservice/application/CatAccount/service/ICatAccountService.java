@@ -16,9 +16,9 @@ public interface ICatAccountService {
 
     Response<List<CatAccountDto>> findAllByPersonId(Long personId);
 
-    Response<Long> withdraw(NationalTransactionRequest request);
+    Response<Long> withdraw(NationalTransactionRequest nationalTransactionRequest);
 
-    Response<Long> deposit(NationalTransactionRequest request);
+    Response<Long> deposit(NationalTransactionRequest nationalTransactionRequest);
 
     Response<Long> getBalance(Long accountId);
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
+public class  CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
     StoredProcedureQueryBuilder storedProcedureQueryBuilder;
     @PersistenceContext
     private EntityManager entityManager;
@@ -51,7 +51,7 @@ public class CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
     @Override
     public List<CatAccount> findAllByPersonId(Long personId) {
         return entityManager.createQuery(
-                        "SELECT p FROM Person p WHERE person.id = :personId")
+                        "SELECT a FROM CatAccount a WHERE a.personId = :personId")
                 .setParameter("personId", personId)
                 .getResultList();
     }

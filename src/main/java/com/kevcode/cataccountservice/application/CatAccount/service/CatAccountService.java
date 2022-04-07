@@ -58,22 +58,40 @@ public class CatAccountService implements ICatAccountService {
     }
 
     @Override
-    public Response<Long> withdraw(NationalTransactionRequest request) {
+    public Response<Long> withdraw(NationalTransactionRequest nationalTransactionRequest) {
+        Long accountId = nationalTransactionRequest.getAccountId();
+        Long value = nationalTransactionRequest.getValue();
+        if (accountId <= 0)
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un id de cuenta válido.");
+        if (value <= 0) return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido.");
         Long balance = catAccountCustomRepository.withdraw(value, accountId);
         return new Response<>(balance, HttpStatus.OK, "Su nuevo balance es de " + balance.toString());
     }
 
+
     @Override
-    public Response<Long> deposit(Long value, Long accountId) {
-        if (value <= 0) return new Response<>(null, HttpStatus.BAD_REQUEST, "Proporcione valores válidos");
+    public Response<Long> deposit(NationalTransactionRequest nationalTransactionRequest) {
+        Long accountId = nationalTransactionRequest.getAccountId();
+        Long value = nationalTransactionRequest.getValue();
+        if (numberLowerOrEqualsToZero(accountId))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un id de cuenta válido.");
+        if (numberLowerOrEqualsToZero(value))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido.");
         Long balance = catAccountCustomRepository.deposit(value, accountId);
         return new Response<>(balance, HttpStatus.OK, "Su nuevo balance es de " + balance.toString());
     }
 
     @Override
     public Response<Long> getBalance(Long accountId) {
-        if (accountId <= 0) return new Response<>(null, HttpStatus.BAD_REQUEST, "Proporcione valores válidos");
+        if (numberLowerOrEqualsToZero(accountId))
+            return new Response<>(0L, HttpStatus.BAD_REQUEST, "Por favor, digite un valor válido");
         Long balance = catAccountCustomRepository.getBalance(accountId);
-        return new Response<>(balance, HttpStatus.OK, "Su balance es de " + balance.toString());
+        return new Response<>(balance, HttpStatus.OK, "Su balance es de " + balance);
     }
+
+    private boolean numberLowerOrEqualsToZero(Long value) {
+        return value <= 0;
+    }
+
+
 }
