@@ -1,101 +1,78 @@
 package com.kevcode.cataccountservice.infrastructure;
 
 import com.kevcode.cataccountservice.domain.cataccount.entities.CatAccount;
-import com.kevcode.cataccountservice.infrastructure.helpers.NationalTransactions;
-import com.kevcode.cataccountservice.infrastructure.helpers.StoredProcedureParameter;
-import com.kevcode.cataccountservice.infrastructure.helpers.StoredProcedureQueryBuilder;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
-public class  CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
-    StoredProcedureQueryBuilder storedProcedureQueryBuilder;
-    @PersistenceContext
-    private EntityManager entityManager;
+public class CatAccountRepositoryCustom implements ICatAccountRepositoryCustom {
+    private final JdbcTemplate _jdbcTemplate;
 
-    public CatAccountRepositoryCustom() {
-        storedProcedureQueryBuilder = new StoredProcedureQueryBuilder();
+    public CatAccountRepositoryCustom(JdbcTemplate jdbcTemplate) {
+        this._jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Long withdraw(Long value, Long accountId) {
-        StoredProcedureQuery storedProcedure = getWithdrawStoredProcedureQuery();
-        storedProcedure.setParameter("value", value);
-        storedProcedure.setParameter("accountId", accountId);
-        storedProcedure.execute();
-        return (Long) storedProcedure.getOutputParameterValue("balance");
+        SimpleJdbcCall jdbcCall = getSimpleJdbcCall("SP_WITHDRAW");
+        SqlParameterSource parameterSource = new MapSqlParameterSource().addValue("value", value).addValue("accountId", accountId);
+        Map<String, Object> executionResult = jdbcCall.execute(parameterSource);
+        return (Long) executionResult.get("balance");
     }
 
 
     @Override
     public Long deposit(Long value, Long accountId) {
-        StoredProcedureQuery storedProcedure = getDepositStoredProcedureQuery();
-        storedProcedure.setParameter("value", value);
-        storedProcedure.setParameter("accountId", accountId);
-        storedProcedure.execute();
-        return (Long) storedProcedure.getOutputParameterValue("balance");
+        SimpleJdbcCall jdbcCall = getSimpleJdbcCall("SP_DEPOSIT");
+        SqlParameterSource parameterSource = new MapSqlParameterSource().addValue("value", value).addValue("accountId", accountId);
+        Map<String, Object> executionResult = jdbcCall.execute(parameterSource);
+        return (Long) executionResult.get("balance");
     }
 
 
     @Override
     public Long getBalance(Long accountId) {
-        StoredProcedureQuery storedProcedure = getBalanceStoredProcedureQuery();
-        storedProcedure.setParameter("accountId", accountId);
-        storedProcedure.execute();
-        return (Long) storedProcedure.getOutputParameterValue("balance");
+        SimpleJdbcCall jdbcCall = getSimpleJdbcCall("SP_GET_BALANCE");
+        SqlParameterSource parameterSource = new MapSqlParameterSource().addValue("accountId", accountId);
+        Map<String, Object> executionResult = jdbcCall.execute(parameterSource);
+        return (Long) executionResult.get("balance");
     }
 
     @Override
     public List<CatAccount> findAllByPersonId(Long personId) {
-        return entityManager.createQuery(
-                        "SELECT a FROM CatAccount a WHERE a.personId = :personId")
-                .setParameter("personId", personId)
-                .getResultList();
+
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(_jdbcTemplate);
+        String sql = "select * from cataccount where personId = :personId";
+        Map<String, Object> argMap = new HashMap<>();
+        argMap.put("personId", personId);
+        List<CatAccount> catAccounts = namedParameterJdbcTemplate.query(sql, argMap, createResultSetExtractor());
+        return catAccounts;
     }
 
-    private StoredProcedureQuery getBalanceStoredProcedureQuery() {
-        String storedProcedureName = "SP_CAT_ACCOUNT_GET_BALANCE";
-        return storedProcedureQueryBuilder.build(storedProcedureName,
-                buildStoredProcedureParameterList(NationalTransactions.GET_BALANCE),
-                entityManager);
-    }
-
-    private StoredProcedureQuery getWithdrawStoredProcedureQuery() {
-        String storedProcedureName = "SP_CAT_ACCOUNT_WITHDRAW";
-        return storedProcedureQueryBuilder.build(storedProcedureName,
-                buildStoredProcedureParameterList(NationalTransactions.WITHDRAW),
-                entityManager);
-    }
-
-    private StoredProcedureQuery getDepositStoredProcedureQuery() {
-        String storedProcedureName = "SP_CAT_ACCOUNT_DEPOSIT";
-        return storedProcedureQueryBuilder.build(storedProcedureName,
-                buildStoredProcedureParameterList(NationalTransactions.DEPOSIT),
-                entityManager);
-    }
-
-    private List<StoredProcedureParameter> buildStoredProcedureParameterList(NationalTransactions transactionType) {
-        switch (transactionType) {
-            case DEPOSIT:
-            case WITHDRAW: {
-                List<StoredProcedureParameter> parameterList = new ArrayList<>();
-                parameterList.add(new StoredProcedureParameter("value", Long.class, ParameterMode.IN));
-                parameterList.add(new StoredProcedureParameter("accountId", Long.class, ParameterMode.IN));
-                parameterList.add(new StoredProcedureParameter("balance", Long.class, ParameterMode.OUT));
-                return parameterList;
+    private ResultSetExtractor<List<CatAccount>> createResultSetExtractor() {
+        return rs -> {
+            List<CatAccount> catAccounts = new ArrayList<>();
+            while (rs.next()) {
+                CatAccount catAccount = new CatAccount();
+                catAccount.setPersonId(rs.getLong("personId"));
+                catAccount.setBalance(rs.getLong("balance"));
+                catAccount.setId(rs.getLong("id"));
             }
-            case GET_BALANCE: {
-                List<StoredProcedureParameter> parameterList = new ArrayList<>();
-                parameterList.add(new StoredProcedureParameter("accountId", Long.class, ParameterMode.IN));
-                parameterList.add(new StoredProcedureParameter("balance", Long.class, ParameterMode.OUT));
-                return parameterList;
-            }
-            default:
-                throw new IllegalStateException("Por favor, proporcione un tipo de transacción válido");
-        }
+            return catAccounts;
+        };
     }
 
+    private SimpleJdbcCall getSimpleJdbcCall(String storedProcedureName) {
+        return new SimpleJdbcCall(_jdbcTemplate).withProcedureName(storedProcedureName);
+    }
 }
